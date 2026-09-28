@@ -77,4 +77,9 @@
     <string name="call_notification_channel">Status połączenia</string>
     <string name="call_notification_channel_high_priority">Status połączenia (wysoki priorytet)</string>
     <string name="calling_accounts">Konta telefoniczne</string>
+    <string name="contact_details">Szczegóły kontaktu</string>
+    <string name="no_phone_number_found">Nie znaleziono numeru telefonu</string>
+    <string name="phone_number">Numer telefonu</string>
+    <string name="phone_numbers">Numery telefonów</string>
+    <string name="call_history">Historia połączeń</string>
 </resources>
