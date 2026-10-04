@@ -269,11 +269,11 @@ class ContactHubActivity : SimpleActivity() {
 
     private fun addNotesModule(panel: LinearLayout) {
         val prefs = getSharedPreferences("contact_hub_notes", MODE_PRIVATE)
-        val key = "note_" + contactId
+        val key = "notes_" + contactId
+        val legacyKey = "note_" + contactId
         val editor = EditText(this).apply {
-            hint = "כתוב פתק על איש הקשר..."
-            setText(prefs.getString(key, ""))
-            minLines = 8
+            hint = "כתוב פתק חדש..."
+            minLines = 5
             gravity = Gravity.TOP or Gravity.END
             layoutDirection = View.LAYOUT_DIRECTION_RTL
             setPadding(20, 24, 20, 24)
@@ -283,15 +283,55 @@ class ContactHubActivity : SimpleActivity() {
             LinearLayout.LayoutParams.WRAP_CONTENT
         ))
 
+        val notesList = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.END
+        }
+
+        fun renderNotes() {
+            notesList.removeAllViews()
+            val saved = prefs.getString(key, "").orEmpty().split("\n---CONTACTHUB---\n").filter { it.isNotBlank() }.toMutableList()
+            val legacy = prefs.getString(legacyKey, "").orEmpty()
+            if (saved.isEmpty() && legacy.isNotBlank()) saved.add(legacy)
+            if (saved.isEmpty()) {
+                notesList.addView(TextView(this).apply { text = "אין עדיין פתקים"; textSize = 16f; gravity = Gravity.END; setPadding(0, 24, 0, 0) })
+            } else {
+                saved.asReversed().forEachIndexed { reverseIndex, note ->
+                    val originalIndex = saved.lastIndex - reverseIndex
+                    val card = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.END; setPadding(20, 20, 20, 20) }
+                    card.addView(TextView(this).apply { text = note; textSize = 17f; gravity = Gravity.END })
+                    card.addView(Button(this).apply {
+                        text = "מחק פתק"
+                        setOnClickListener {
+                            saved.removeAt(originalIndex)
+                            prefs.edit().putString(key, saved.joinToString("\n---CONTACTHUB---\n")).remove(legacyKey).apply()
+                            renderNotes()
+                        }
+                    })
+                    notesList.addView(card)
+                }
+            }
+        }
+
         panel.addView(Button(this).apply {
-            text = "שמור פתק"
+            text = "שמור כפתק חדש"
             setOnClickListener {
-                prefs.edit().putString(key, editor.text?.toString().orEmpty()).apply()
-                toast("הפתק נשמר")
+                val note = editor.text?.toString()?.trim().orEmpty()
+                if (note.isNotEmpty()) {
+                    val current = prefs.getString(key, "").orEmpty().split("\n---CONTACTHUB---\n").filter { it.isNotBlank() }.toMutableList()
+                    val legacy = prefs.getString(legacyKey, "").orEmpty()
+                    if (current.isEmpty() && legacy.isNotBlank()) current.add(legacy)
+                    current.add(note)
+                    prefs.edit().putString(key, current.joinToString("\n---CONTACTHUB---\n")).remove(legacyKey).apply()
+                    editor.setText("")
+                    renderNotes()
+                    toast("הפתק נשמר")
+                }
             }
         })
+        panel.addView(notesList)
+        renderNotes()
     }
-
     private fun addRecordingPreferences(panel: LinearLayout) {
         val prefs = getSharedPreferences("contact_hub_recording", MODE_PRIVATE)
         val key = "recording_mode_" + contactId
