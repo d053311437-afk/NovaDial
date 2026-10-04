@@ -160,6 +160,16 @@ class ContactsAdapter(
 
     override fun getItemCount() = contacts.size
 
+    /**
+     * Keeps the visible contacts list in Hebrew-friendly alphabetical order.
+     * Search results can call updateItems as usual; the adapter normalizes the order here.
+     */
+    private fun alphabeticallySorted(items: List<Contact>): ArrayList<Contact> {
+        return ArrayList(items.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) {
+            it.getNameToDisplay(activity).trim()
+        }))
+    }
+
     private fun getCabBlockContactTitle(callback: (String) -> Unit) {
         val contact = getSelectedItems().firstOrNull() ?: return callback("")
 
@@ -223,7 +233,7 @@ class ContactsAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateItems(newItems: List<Contact>, highlightText: String = "") {
-        contacts = ArrayList(newItems)
+        contacts = alphabeticallySorted(newItems)
         textToHighlight = highlightText
         notifyDataSetChanged()
         finishActMode()
