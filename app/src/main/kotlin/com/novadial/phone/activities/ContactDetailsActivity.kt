@@ -198,7 +198,6 @@ class ContactDetailsActivity : SimpleActivity() {
         binding.callActionIcon.applyColorFilter(callBtnBgColor.getContrastColor())
 
         setupActions()
-        setupContactHubTools()
         updateTextColors(binding.contactDetailsCoordinator)
 
         val headerTextColor = bgColor.getContrastColor()
@@ -375,27 +374,20 @@ class ContactDetailsActivity : SimpleActivity() {
                 showContactQRCode()
             }
 
+            contactHubSave.setOnClickListener {
+                if (contactId == -1L) {
+                    toast("שמור קודם את איש הקשר")
+                } else {
+                    startActivity(Intent(this@ContactDetailsActivity, ContactHubActivity::class.java).apply {
+                        putExtra(ContactHubActivity.EXTRA_CONTACT_ID, contactId)
+                        putExtra(ContactHubActivity.EXTRA_CONTACT_NAME, contactName)
+                    })
+                }
+            }
+
             deleteContactRow.setOnClickListener {
                 askConfirmDeleteContact()
             }
-        }
-    }
-
-    private fun setupContactHubTools() {
-        val prefs = getSharedPreferences("contact_hub", MODE_PRIVATE)
-        fun key(suffix: String) = "contact_" + contactId + "_" + suffix
-
-        binding.contactHubNotes.setText(prefs.getString(key("notes"), ""))
-        binding.contactHubTags.setText(prefs.getString(key("tags"), ""))
-        binding.contactHubRecording.isChecked = prefs.getBoolean(key("recording"), false)
-
-        binding.contactHubSave.setOnClickListener {
-            prefs.edit()
-                .putString(key("notes"), binding.contactHubNotes.text?.toString().orEmpty())
-                .putString(key("tags"), binding.contactHubTags.text?.toString().orEmpty())
-                .putBoolean(key("recording"), binding.contactHubRecording.isChecked)
-                .apply()
-            toast("ההגדרות נשמרו")
         }
     }
 
