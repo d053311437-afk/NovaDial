@@ -8,6 +8,9 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import org.fossify.commons.extensions.toast
 import com.novadial.phone.R
 
 class ContactHubActivity : SimpleActivity() {
@@ -72,14 +75,70 @@ class ContactHubActivity : SimpleActivity() {
             gravity = Gravity.END
             setPadding(0, 24, 0, 0)
         })
+
+        if (title == "הקלטות") {
+            addRecordingPreferences(panel)
+        }
+
         content.addView(panel, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
     }
 
+    private fun addRecordingPreferences(panel: LinearLayout) {
+        val prefs = getSharedPreferences("contact_hub_recording", MODE_PRIVATE)
+        val key = "recording_mode_" + contactId
+        val saved = prefs.getInt(key, MODE_DEFAULT)
+
+        panel.addView(TextView(this).apply {
+            text = "הקלטה אוטומטית לאיש קשר זה"
+            textSize = 20f
+            setTypeface(typeface, Typeface.BOLD)
+            gravity = Gravity.END
+            setPadding(0, 40, 0, 12)
+        })
+
+        val group = RadioGroup(this).apply {
+            orientation = RadioGroup.VERTICAL
+            gravity = Gravity.END
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
+        }
+        val defaultButton = RadioButton(this).apply { text = "ברירת מחדל"; id = View.generateViewId() }
+        val alwaysButton = RadioButton(this).apply { text = "להקליט תמיד"; id = View.generateViewId() }
+        val neverButton = RadioButton(this).apply { text = "לא להקליט"; id = View.generateViewId() }
+        group.addView(defaultButton)
+        group.addView(alwaysButton)
+        group.addView(neverButton)
+        group.check(when (saved) {
+            MODE_ALWAYS -> alwaysButton.id
+            MODE_NEVER -> neverButton.id
+            else -> defaultButton.id
+        })
+        group.setOnCheckedChangeListener { _, checkedId ->
+            val mode = when (checkedId) {
+                alwaysButton.id -> MODE_ALWAYS
+                neverButton.id -> MODE_NEVER
+                else -> MODE_DEFAULT
+            }
+            prefs.edit().putInt(key, mode).apply()
+            toast("העדפת ההקלטה נשמרה")
+        }
+        panel.addView(group)
+
+        panel.addView(TextView(this).apply {
+            text = "רשימת ההקלטות של איש הקשר תופיע כאן. ההקלטה בפועל תפעל רק במכשירים שבהם Android והחייגן מאפשרים זאת."
+            textSize = 15f
+            gravity = Gravity.END
+            setPadding(0, 28, 0, 0)
+        })
+    }
+
     companion object {
         const val EXTRA_CONTACT_ID = "contact_id"
         const val EXTRA_CONTACT_NAME = "contact_name"
+        private const val MODE_DEFAULT = 0
+        private const val MODE_ALWAYS = 1
+        private const val MODE_NEVER = 2
     }
 }
