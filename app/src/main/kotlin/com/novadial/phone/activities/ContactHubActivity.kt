@@ -90,14 +90,51 @@ class ContactHubActivity : SimpleActivity() {
     }
 
     private fun addOverview(panel: LinearLayout) {
-        val prefs = getSharedPreferences("contact_hub_notes", MODE_PRIVATE)
-        val note = prefs.getString("note_" + contactId, "").orEmpty()
-        panel.addView(TextView(this).apply {
-            text = if (note.isBlank()) "אין עדיין פתקים לאיש קשר זה" else "פתק אחרון: " + note.take(120)
-            textSize = 16f
-            gravity = Gravity.END
-            setPadding(0, 36, 0, 0)
+        val notes = getSharedPreferences("contact_hub_notes", MODE_PRIVATE)
+        val recording = getSharedPreferences("contact_hub_recording", MODE_PRIVATE)
+        val note = notes.getString("note_" + contactId, "").orEmpty()
+        val recordingMode = recording.getInt("recording_mode_" + contactId, MODE_DEFAULT)
+
+        addDashboardCard(panel, "שיחות", "היסטוריית שיחות ופעולות מהירות")
+        addDashboardCard(panel, "הקלטות", when (recordingMode) {
+            MODE_ALWAYS -> "העדפה: להקליט תמיד"
+            MODE_NEVER -> "העדפה: לא להקליט"
+            else -> "העדפה: ברירת מחדל"
         })
+        addDashboardCard(panel, "פתקים", if (note.isBlank()) "אין עדיין פתקים" else note.take(140))
+        addDashboardCard(panel, "משימות", "משימות ותזכורות של איש הקשר")
+        addDashboardCard(panel, "קבצים ותמונות", "כל הקבצים המשויכים לאיש הקשר")
+        addDashboardCard(panel, "תגיות", "קבוצות ותגיות")
+        addDashboardCard(panel, "נתונים", "סטטיסטיקות פעילות ושיחות")
+    }
+
+    private fun addDashboardCard(panel: LinearLayout, title: String, subtitle: String) {
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.END
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
+            setPadding(24, 22, 24, 22)
+        }
+        card.addView(TextView(this).apply {
+            text = title
+            textSize = 19f
+            setTypeface(typeface, Typeface.BOLD)
+            gravity = Gravity.END
+        })
+        card.addView(TextView(this).apply {
+            text = subtitle
+            textSize = 15f
+            gravity = Gravity.END
+            setPadding(0, 8, 0, 0)
+        })
+        card.setOnClickListener { showModule(when (title) {
+            "קבצים ותמונות" -> "קבצים"
+            else -> title
+        }) }
+        panel.addView(card, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { setMargins(0, 18, 0, 0) })
     }
 
     private fun addNotesModule(panel: LinearLayout) {
