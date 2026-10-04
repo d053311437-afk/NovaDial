@@ -625,6 +625,50 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="12dp" />
 
+                <!-- ContactHub personal tools -->
+                <LinearLayout
+                    android:id="@+id/contact_hub_tools"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <org.fossify.commons.views.MyTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ContactHub"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/contact_hub_notes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="פתקים על איש הקשר"
+                        android:gravity="top|start"
+                        android:minLines="2" />
+
+                    <EditText
+                        android:id="@+id/contact_hub_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="תגיות / קבוצות" />
+
+                    <CheckBox
+                        android:id="@+id/contact_hub_recording"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="העדפת הקלטה לאיש קשר זה (כאשר המכשיר תומך)" />
+
+                    <Button
+                        android:id="@+id/contact_hub_save"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="שמור הגדרות איש קשר" />
+                </LinearLayout>
+
                 <!-- Delete Contact Row -->
                 <LinearLayout
                     android:id="@+id/delete_contact_row"
