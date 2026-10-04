@@ -83,6 +83,7 @@ class ContactHubActivity : SimpleActivity() {
             "פתקים" -> addNotesModule(panel)
             "משימות" -> addTasksModule(panel)
             "תגיות" -> addTagsModule(panel)
+            "נתונים" -> addStatsShortcut(panel)
             "הכול" -> addOverview(panel)
         }
 
@@ -145,6 +146,20 @@ class ContactHubActivity : SimpleActivity() {
         ).apply { setMargins(0, 18, 0, 0) })
     }
 
+    private fun addStatsShortcut(panel: LinearLayout) {
+        panel.addView(TextView(this).apply {
+            text = "נתוני השיחות המלאים כבר קיימים ב-NovaDial: מספר שיחות, נכנסות, יוצאות, שלא נענו וזמן שיחה כולל."
+            textSize = 17f
+            gravity = Gravity.END
+            setPadding(0, 32, 0, 16)
+        })
+        panel.addView(Button(this).apply {
+            text = "פתח היסטוריית שיחות מלאה"
+            setOnClickListener {
+                toast("פתח איש קשר דרך היסטוריית השיחות כדי לראות את הסטטיסטיקה המלאה")
+            }
+        })
+    }
     private fun addTagsModule(panel: LinearLayout) {
         val prefs = getSharedPreferences("contact_hub_tags", MODE_PRIVATE)
         val key = "tags_" + contactId
