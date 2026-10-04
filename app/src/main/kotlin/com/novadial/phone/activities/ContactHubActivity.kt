@@ -80,6 +80,7 @@ class ContactHubActivity : SimpleActivity() {
         when (title) {
             "הקלטות" -> addRecordingPreferences(panel)
             "פתקים" -> addNotesModule(panel)
+            "משימות" -> addTasksModule(panel)
             "הכול" -> addOverview(panel)
         }
 
@@ -135,6 +136,71 @@ class ContactHubActivity : SimpleActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply { setMargins(0, 18, 0, 0) })
+    }
+
+    private fun addTasksModule(panel: LinearLayout) {
+        val prefs = getSharedPreferences("contact_hub_tasks", MODE_PRIVATE)
+        val key = "tasks_" + contactId
+        val input = EditText(this).apply {
+            hint = "משימה חדשה לאיש הקשר"
+            gravity = Gravity.END
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
+        }
+        panel.addView(input, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ))
+
+        val list = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.END
+        }
+
+        fun render() {
+            list.removeAllViews()
+            val tasks = prefs.getString(key, "").orEmpty().split("\n").filter { it.isNotBlank() }
+            if (tasks.isEmpty()) {
+                list.addView(TextView(this).apply {
+                    text = "אין משימות פתוחות"
+                    textSize = 16f
+                    gravity = Gravity.END
+                    setPadding(0, 24, 0, 0)
+                })
+            } else {
+                tasks.forEach { task ->
+                    val row = android.widget.CheckBox(this).apply {
+                        text = task
+                        textSize = 17f
+                        gravity = Gravity.END
+                        layoutDirection = View.LAYOUT_DIRECTION_RTL
+                        setOnCheckedChangeListener { _, checked ->
+                            if (checked) {
+                                val remaining = prefs.getString(key, "").orEmpty()
+                                    .split("\n").filter { it.isNotBlank() && it != task }
+                                prefs.edit().putString(key, remaining.joinToString("\n")).apply()
+                                render()
+                            }
+                        }
+                    }
+                    list.addView(row)
+                }
+            }
+        }
+
+        panel.addView(Button(this).apply {
+            text = "הוסף משימה"
+            setOnClickListener {
+                val task = input.text?.toString()?.trim().orEmpty()
+                if (task.isNotEmpty()) {
+                    val current = prefs.getString(key, "").orEmpty()
+                    prefs.edit().putString(key, listOf(current, task).filter { it.isNotBlank() }.joinToString("\n")).apply()
+                    input.setText("")
+                    render()
+                }
+            }
+        })
+        panel.addView(list)
+        render()
     }
 
     private fun addNotesModule(panel: LinearLayout) {
