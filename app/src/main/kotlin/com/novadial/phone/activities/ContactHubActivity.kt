@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.EditText
+import android.widget.ScrollView
 import org.fossify.commons.extensions.toast
 import com.novadial.phone.R
 
@@ -52,7 +53,7 @@ class ContactHubActivity : SimpleActivity() {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.TOP or Gravity.END
             layoutDirection = View.LAYOUT_DIRECTION_RTL
-            setPadding(32, 48, 32, 32)
+            setPadding(32, 48, 32, 48)
         }
         panel.addView(TextView(this).apply {
             text = if (contactName.isBlank()) title else "$title — $contactName"
@@ -81,10 +82,16 @@ class ContactHubActivity : SimpleActivity() {
             "הקלטות" -> addRecordingPreferences(panel)
             "פתקים" -> addNotesModule(panel)
             "משימות" -> addTasksModule(panel)
+            "תגיות" -> addTagsModule(panel)
             "הכול" -> addOverview(panel)
         }
 
-        content.addView(panel, FrameLayout.LayoutParams(
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
+            addView(panel)
+        }
+        content.addView(scroll, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
@@ -136,6 +143,48 @@ class ContactHubActivity : SimpleActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply { setMargins(0, 18, 0, 0) })
+    }
+
+    private fun addTagsModule(panel: LinearLayout) {
+        val prefs = getSharedPreferences("contact_hub_tags", MODE_PRIVATE)
+        val key = "tags_" + contactId
+        val input = EditText(this).apply {
+            hint = "הוסף תגית, לדוגמה: עבודה"
+            gravity = Gravity.END
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
+        }
+        panel.addView(input)
+        val tagsView = TextView(this).apply {
+            textSize = 17f
+            gravity = Gravity.END
+            setPadding(0, 24, 0, 16)
+        }
+        fun refresh() {
+            val tags = prefs.getStringSet(key, emptySet()).orEmpty().sorted()
+            tagsView.text = if (tags.isEmpty()) "אין עדיין תגיות" else tags.joinToString("  •  ")
+        }
+        panel.addView(Button(this).apply {
+            text = "הוסף תגית"
+            setOnClickListener {
+                val value = input.text?.toString()?.trim().orEmpty()
+                if (value.isNotEmpty()) {
+                    val tags = prefs.getStringSet(key, emptySet()).orEmpty().toMutableSet()
+                    tags.add(value)
+                    prefs.edit().putStringSet(key, tags).apply()
+                    input.setText("")
+                    refresh()
+                }
+            }
+        })
+        panel.addView(Button(this).apply {
+            text = "נקה את כל התגיות"
+            setOnClickListener {
+                prefs.edit().remove(key).apply()
+                refresh()
+            }
+        })
+        panel.addView(tagsView)
+        refresh()
     }
 
     private fun addTasksModule(panel: LinearLayout) {
