@@ -380,7 +380,7 @@ class ContactDetailsActivity : SimpleActivity() {
                 } else {
                     startActivity(Intent(this@ContactDetailsActivity, ContactHubActivity::class.java).apply {
                         putExtra(ContactHubActivity.EXTRA_CONTACT_ID, contactId)
-                        putExtra(ContactHubActivity.EXTRA_CONTACT_NAME, contactName)
+                        putExtra(ContactHubActivity.EXTRA_CONTACT_NAME, binding.contactName.text?.toString().orEmpty())
                     })
                 }
             }
