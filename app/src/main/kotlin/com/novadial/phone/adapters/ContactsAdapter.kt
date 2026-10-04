@@ -373,6 +373,21 @@ class ContactsAdapter(
                 }
             }
 
+            // Quick call: tapping the contact name dials immediately.
+            // The avatar and the rest of the row keep their existing contact actions.
+            itemContactName.setOnClickListener {
+                if (!actModeCallback.isSelectable) {
+                    contact.getPrimaryNumber()?.let { number ->
+                        activity.handlePermission(PERMISSION_CALL_PHONE) { granted ->
+                            val action = if (granted) Intent.ACTION_CALL else Intent.ACTION_DIAL
+                            activity.startActivity(Intent(action, Uri.fromParts("tel", number, null)))
+                        }
+                    }
+                } else {
+                    holder.viewClicked(contact)
+                }
+            }
+
             itemContactName.apply {
                 setTextColor(textColor)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize)
