@@ -121,6 +121,13 @@
             android:parentActivityName=".activities.MainActivity" />
 
         <activity
+            android:name=".activities.ContactHubActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:label="ContactHub"
+            android:parentActivityName=".activities.ContactDetailsActivity" />
+
+        <activity
             android:name=".activities.ContactIntentActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
