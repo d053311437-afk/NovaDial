@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.EditText
 import org.fossify.commons.extensions.toast
 import com.novadial.phone.R
 
@@ -76,14 +77,52 @@ class ContactHubActivity : SimpleActivity() {
             setPadding(0, 24, 0, 0)
         })
 
-        if (title == "הקלטות") {
-            addRecordingPreferences(panel)
+        when (title) {
+            "הקלטות" -> addRecordingPreferences(panel)
+            "פתקים" -> addNotesModule(panel)
+            "הכול" -> addOverview(panel)
         }
 
         content.addView(panel, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
+    }
+
+    private fun addOverview(panel: LinearLayout) {
+        val prefs = getSharedPreferences("contact_hub_notes", MODE_PRIVATE)
+        val note = prefs.getString("note_" + contactId, "").orEmpty()
+        panel.addView(TextView(this).apply {
+            text = if (note.isBlank()) "אין עדיין פתקים לאיש קשר זה" else "פתק אחרון: " + note.take(120)
+            textSize = 16f
+            gravity = Gravity.END
+            setPadding(0, 36, 0, 0)
+        })
+    }
+
+    private fun addNotesModule(panel: LinearLayout) {
+        val prefs = getSharedPreferences("contact_hub_notes", MODE_PRIVATE)
+        val key = "note_" + contactId
+        val editor = EditText(this).apply {
+            hint = "כתוב פתק על איש הקשר..."
+            setText(prefs.getString(key, ""))
+            minLines = 8
+            gravity = Gravity.TOP or Gravity.END
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
+            setPadding(20, 24, 20, 24)
+        }
+        panel.addView(editor, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ))
+
+        panel.addView(Button(this).apply {
+            text = "שמור פתק"
+            setOnClickListener {
+                prefs.edit().putString(key, editor.text?.toString().orEmpty()).apply()
+                toast("הפתק נשמר")
+            }
+        })
     }
 
     private fun addRecordingPreferences(panel: LinearLayout) {
