@@ -12,6 +12,7 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.EditText
 import android.widget.ScrollView
+import android.content.Intent
 import org.fossify.commons.extensions.toast
 import com.novadial.phone.R
 
@@ -84,6 +85,9 @@ class ContactHubActivity : SimpleActivity() {
             "משימות" -> addTasksModule(panel)
             "תגיות" -> addTagsModule(panel)
             "נתונים" -> addStatsShortcut(panel)
+            "הגדרות" -> addSettingsModule(panel)
+            "שיחות" -> addCallsModule(panel)
+            "קבצים" -> addFilesModule(panel)
             "הכול" -> addOverview(panel)
         }
 
@@ -144,6 +148,42 @@ class ContactHubActivity : SimpleActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply { setMargins(0, 18, 0, 0) })
+    }
+
+    private fun addCallsModule(panel: LinearLayout) {
+        panel.addView(Button(this).apply {
+            text = "פתח היסטוריית שיחות"
+            setOnClickListener {
+                toast("היסטוריית השיחות המלאה זמינה במסך אחרונים של החייגן")
+                startActivity(Intent(this@ContactHubActivity, MainActivity::class.java))
+            }
+        })
+    }
+
+    private fun addFilesModule(panel: LinearLayout) {
+        panel.addView(TextView(this).apply {
+            text = "קבצים ותמונות יישמרו כאן לפי איש קשר. כרגע אין גישה אוטומטית לקבצים פרטיים של אפליקציות אחרות."
+            textSize = 17f
+            gravity = Gravity.END
+            setPadding(0, 28, 0, 16)
+        })
+    }
+
+    private fun addSettingsModule(panel: LinearLayout) {
+        panel.addView(Button(this).apply {
+            text = "פתח את כל הגדרות החייגן"
+            setOnClickListener {
+                startActivity(Intent(this@ContactHubActivity, SettingsActivity::class.java))
+            }
+        })
+        panel.addView(Button(this).apply {
+            text = "הגדרות הקלטה לאיש קשר זה"
+            setOnClickListener { showModule("הקלטות") }
+        })
+        panel.addView(Button(this).apply {
+            text = "ניהול תגיות"
+            setOnClickListener { showModule("תגיות") }
+        })
     }
 
     private fun addStatsShortcut(panel: LinearLayout) {
