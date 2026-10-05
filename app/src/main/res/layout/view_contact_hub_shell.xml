@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:layoutDirection="rtl">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:layoutDirection="rtl" android:padding="12dp">
 
-    <LinearLayout
-        android:id="@+id/contact_hub_sidebar"
-        android:layout_width="88dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="top|center_horizontal"
-        android:padding="8dp">
+    <TextView android:id="@+id/hub_title" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="ContactHub"
+        android:textSize="26sp" android:textStyle="bold" android:gravity="end"
+        android:padding="8dp"/>
 
-        <Button android:id="@+id/hub_all" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="הכול"/>
-        <Button android:id="@+id/hub_calls" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="שיחות"/>
-        <Button android:id="@+id/hub_recordings" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="הקלטות"/>
-        <Button android:id="@+id/hub_notes" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="פתקים"/>
-        <Button android:id="@+id/hub_tasks" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="משימות"/>
-        <Button android:id="@+id/hub_files" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="קבצים"/>
-        <Button android:id="@+id/hub_tags" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="תגיות"/>
-        <Button android:id="@+id/hub_stats" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="נתונים"/>
-        <Button android:id="@+id/hub_settings" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="הגדרות"/>
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/contact_hub_content"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+    <FrameLayout android:id="@+id/contact_hub_content"
+        android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1"/>
+
+    <HorizontalScrollView android:layout_width="match_parent"
+        android:layout_height="76dp" android:fillViewport="true"
+        android:scrollbars="none">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="match_parent"
+            android:orientation="horizontal" android:gravity="center" android:layoutDirection="rtl">
+            <Button android:id="@+id/hub_all" android:layout_width="76dp" android:layout_height="64dp" android:text="הכול" android:textSize="12sp"/>
+            <Button android:id="@+id/hub_calls" android:layout_width="76dp" android:layout_height="64dp" android:text="שיחות" android:textSize="12sp"/>
+            <Button android:id="@+id/hub_recordings" android:layout_width="76dp" android:layout_height="64dp" android:text="הקלטות" android:textSize="11sp"/>
+            <Button android:id="@+id/hub_notes" android:layout_width="76dp" android:layout_height="64dp" android:text="פתקים" android:textSize="12sp"/>
+            <Button android:id="@+id/hub_tasks" android:layout_width="76dp" android:layout_height="64dp" android:text="משימות" android:textSize="11sp"/>
+            <Button android:id="@+id/hub_files" android:layout_width="76dp" android:layout_height="64dp" android:text="קבצים" android:textSize="12sp"/>
+            <Button android:id="@+id/hub_tags" android:layout_width="76dp" android:layout_height="64dp" android:text="תגיות" android:textSize="12sp"/>
+            <Button android:id="@+id/hub_stats" android:layout_width="76dp" android:layout_height="64dp" android:text="נתונים" android:textSize="11sp"/>
+            <Button android:id="@+id/hub_settings" android:layout_width="76dp" android:layout_height="64dp" android:text="הגדרות" android:textSize="11sp"/>
+        </LinearLayout>
+    </HorizontalScrollView>
 </LinearLayout>
